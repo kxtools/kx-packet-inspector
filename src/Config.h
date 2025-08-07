@@ -7,6 +7,6 @@ namespace kx {
 
     // Configuration for the target process and function signature
     constexpr std::string_view TARGET_PROCESS_NAME = "Gw2-64.exe";
-    constexpr std::string_view MSG_SEND_PATTERN = "40 ? 48 83 EC ? 48 8D ? ? ? 48 89 ? ? 48 89 ? ? 48 89 ? ? 4C 89 ? ? 48 8B ? ? ? ? ? 48 33 ? 48 89 ? ? 48 8B ? E8";
-    constexpr std::string_view MSG_DISPATCH_PATTERN = "48 89 5C 24 ? 4C 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC ? 8B 82";
+    constexpr std::string_view MSG_CONN_QUEUE_PACKET_PATTERN = "4C 89 4C 24 ? 48 83 EC ? 44 8B D2";
+    constexpr std::string_view MSG_DISPATCH_STREAM_PATTERN = "48 89 5C 24 ? 4C 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC ? 8B 82";
 }

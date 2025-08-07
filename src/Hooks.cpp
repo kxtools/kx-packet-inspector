@@ -18,7 +18,7 @@ namespace kx {
 
             std::cout << "Scanning for MsgSend pattern..." << std::endl;
             std::optional<uintptr_t> msgSendAddrOpt = kx::PatternScanner::FindPattern(
-                std::string(kx::MSG_SEND_PATTERN),
+                std::string(kx::MSG_CONN_QUEUE_PACKET_PATTERN),
                 std::string(kx::TARGET_PROCESS_NAME)
             );
 
@@ -32,7 +32,7 @@ namespace kx {
             std::cout << "[GameHooks] MsgSend pattern found at: 0x" << std::hex << g_msgSendAddress << std::dec << std::endl;
 
             // Now use the existing MsgSendHook.h logic, but it should internally use HookManager
-            if (::InitializeMsgSendHook(g_msgSendAddress)) { // Call the global function from MsgSendHook.h
+            if (::InitializeQueuePacketHook(g_msgSendAddress)) { // Call the global function from MsgSendHook.h
                 g_msgSendHookStatus = HookStatus::OK;
                 std::cout << "[GameHooks] MsgSend hook initialized." << std::endl;
                 return true;
@@ -50,7 +50,7 @@ namespace kx {
 
             std::cout << "Scanning for MsgDispatch pattern..." << std::endl;
             std::optional<uintptr_t> msgDispatchAddrOpt = kx::PatternScanner::FindPattern(
-                std::string(kx::MSG_DISPATCH_PATTERN), // Use dispatcher pattern
+                std::string(kx::MSG_DISPATCH_STREAM_PATTERN), // Use dispatcher pattern
                 std::string(kx::TARGET_PROCESS_NAME)
             );
 
@@ -79,7 +79,7 @@ namespace kx {
         void Shutdown() {
             // Call specific cleanup if needed (e.g., freeing resources specific to the hook)
             // These functions might become empty if all cleanup is handled by HookManager::Shutdown
-            ::CleanupMsgSendHook();
+            ::CleanupQueuePacketHook();
             ::CleanupMessageHandlerHooks();
             std::cout << "[GameHooks] Shutdown complete." << std::endl;
         }

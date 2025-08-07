@@ -1,100 +1,107 @@
 #include "MsgSendHook.h"
-#include "PacketProcessor.h" // Include the new processor header
-#include "AppState.h"        // For g_capturePaused, g_isShuttingDown
-#include "GameStructs.h"     // For MsgSendContext definition
+#include "PacketProcessor.h"
+#include "AppState.h"
+#include "GameStructs.h"
 #include "HookManager.h"
+#include <iostream>
+#include <exception>
+#include <cstdio>
+#include <debugapi.h>
 
-#include <iostream> // For temporary error logging (replace with Log.h later)
+// Function pointer to the original game function. This will be populated by MinHook.
+// The `jmp` in our assembly stub will jump to the address stored in this pointer.
+extern "C" QueuePacketFunc originalQueuePacket = nullptr;
 
-// Function pointer to the original game function. Set by MinHook.
-MsgSendFunc originalMsgSend = nullptr;
-// Address of the target function, used for cleanup.
-static uintptr_t hookedMsgSendAddress = 0;
+// Address of the target function, stored globally for cleanup.
+static uintptr_t hookedQueuePacketAddress = 0;
 
-// Detour function for the game's internal message sending logic.
-// This function now primarily captures the context and delegates processing.
-void __fastcall hookMsgSend(void* param_1) {
-
+/**
+ * @brief This is the pure C++ part of our logic. It's called from the assembly stub.
+ * @details This function is where all packet processing and logging should occur.
+ *          It's kept separate from the hook itself to avoid compiler-generated
+ *          prologues/epilogues that could corrupt the stack or registers.
+ *          It must be declared `extern "C"` so that the assembler can find it by name
+ *          without C++ name mangling.
+ * @param pMsgConn Pointer to the game's MsgConn object.
+ * @param priority Priority flag for the packet.
+ * @param opcode The packet's opcode.
+ * @param pPayload Pointer to the packet's data payload.
+*/
+extern "C" void ProcessPacketLogic(void* pMsgConn, int priority, uint32_t opcode, void* pPayload) {
     // Check if packet capture is active before processing.
-    // This check happens *before* calling the original function.
     if (!kx::g_capturePaused && !kx::g_isShuttingDown.load(std::memory_order_acquire)) {
-        if (param_1 != nullptr) {
+        if (pMsgConn != nullptr && pPayload != nullptr) {
             try {
-                // Cast the context pointer.
-                auto* context = reinterpret_cast<kx::GameStructs::MsgSendContext*>(param_1);
                 // Delegate the actual processing and logging.
-                kx::PacketProcessing::ProcessOutgoingPacket(context);
+                // The size is unknown at this layer, but we can pass 0 and have the
+                // processor decide what to do. For many packets, the schema is needed for the true size.
+                kx::PacketProcessing::ProcessDispatchedMessage(
+                    kx::PacketDirection::Sent,
+                    static_cast<uint16_t>(opcode), // Safely cast opcode to uint16_t
+                    static_cast<const uint8_t*>(pPayload),
+                    0, // Size is unknown here, but can be looked up via schema if needed
+                    pMsgConn
+                );
             }
             catch (const std::exception& e) {
-                // Log::Error("[hookMsgSend] Exception during packet processing delegation: %s", e.what());
                 char msg[256];
-                sprintf_s(msg, sizeof(msg), "[hookMsgSend] Exception during outgoing processing call: %s\n", e.what());
+                sprintf_s(msg, sizeof(msg), "[ProcessPacketLogic] Exception: %s\n", e.what());
                 OutputDebugStringA(msg);
             }
             catch (...) {
-                // Log::Error("[hookMsgSend] Unknown exception during packet processing delegation.");
-                OutputDebugStringA("[hookMsgSend] Unknown exception during outgoing processing call.\n");
+                OutputDebugStringA("[ProcessPacketLogic] Unknown exception.\n");
             }
         }
-        else {
-            // Log::Warn("[hookMsgSend] Called with null context pointer.");
-            OutputDebugStringA("[hookMsgSend] Warning: Called with null context pointer.\n");
-        }
-    }
-
-    // CRITICAL: Always call the original function, regardless of capture state or errors.
-    if (originalMsgSend) {
-        originalMsgSend(param_1);
-    }
-    else {
-        // Log::Critical("[hookMsgSend] Original MsgSend function pointer is NULL!");
-        OutputDebugStringA("[hookMsgSend] CRITICAL ERROR: Original MsgSend function pointer is NULL!\n");
-        // Avoid crashing, but logging indicates a severe setup issue.
     }
 }
 
-// Initializes the MinHook detour for the message sending function.
-bool InitializeMsgSendHook(uintptr_t targetFunctionAddress) {
+/**
+ * @brief Initializes the MinHook detour for the packet queueing function.
+ * @param targetFunctionAddress The memory address of the original game function.
+ * @return true If the hook was successfully created and enabled, false otherwise.
+ */
+bool InitializeQueuePacketHook(uintptr_t targetFunctionAddress) {
     if (targetFunctionAddress == 0) {
-        // Log::Error("InitializeMsgSendHook called with null address.");
-        std::cerr << "[Error] InitializeMsgSendHook called with null address." << std::endl;
+        std::cerr << "[QueuePacketHook] Error: Called with null address." << std::endl;
         return false;
     }
 
-    // Create the hook.
-    hookedMsgSendAddress = targetFunctionAddress; // Keep track for potential specific cleanup
-    if (!kx::Hooking::HookManager::CreateHook(reinterpret_cast<LPVOID>(targetFunctionAddress), &hookMsgSend, reinterpret_cast<LPVOID*>(&originalMsgSend))) {
-        std::cerr << "[MsgSendHook] Hook creation failed via HookManager." << std::endl;
-        hookedMsgSendAddress = 0;
+    hookedQueuePacketAddress = targetFunctionAddress;
+
+    // We now point the hook to our external assembly stub, `hookQueuePacket_Naked`.
+    // The assembler will create the `hookQueuePacket_Naked` symbol, and the extern "C"
+    // declaration in the header allows the C++ compiler to find it.
+    if (!kx::Hooking::HookManager::CreateHook(reinterpret_cast<LPVOID>(targetFunctionAddress), &hookQueuePacket_Naked, reinterpret_cast<LPVOID*>(&originalQueuePacket))) {
+        std::cerr << "[QueuePacketHook] Hook creation failed." << std::endl;
+        hookedQueuePacketAddress = 0;
         return false;
     }
 
     if (!kx::Hooking::HookManager::EnableHook(reinterpret_cast<LPVOID>(targetFunctionAddress))) {
-        std::cerr << "[MsgSendHook] Hook enabling failed via HookManager." << std::endl;
-        hookedMsgSendAddress = 0;
+        std::cerr << "[QueuePacketHook] Hook enabling failed." << std::endl;
+        hookedQueuePacketAddress = 0;
         return false;
     }
 
+    std::cout << "[QueuePacketHook] Hook installed successfully." << std::endl;
     return true;
 }
 
-// The explicit disable-remove sequence is employed to avoid potential disconnects or packet loss,
-// ensuring the hook is cleanly removed before the shutdown process completes.
-void CleanupMsgSendHook() {
-    if (hookedMsgSendAddress != 0) {
-        // Disable the hook to immediately halt message interception.
-        if (MH_DisableHook(reinterpret_cast<LPVOID>(hookedMsgSendAddress)) != MH_OK) {
-            std::cerr << "[MsgSendHook] Failed to disable hook." << std::endl;
+/**
+ * @brief Disables and removes the MinHook detour for the packet queueing function.
+ */
+void CleanupQueuePacketHook() {
+    if (hookedQueuePacketAddress != 0) {
+        if (MH_DisableHook(reinterpret_cast<LPVOID>(hookedQueuePacketAddress)) != MH_OK) {
+            std::cerr << "[QueuePacketHook] Failed to disable hook." << std::endl;
         }
 
-        // Remove the hook to finalize cleanup and restore original function behavior.
-        if (MH_RemoveHook(reinterpret_cast<LPVOID>(hookedMsgSendAddress)) != MH_OK) {
-            std::cerr << "[MsgSendHook] Failed to remove hook." << std::endl;
+        if (MH_RemoveHook(reinterpret_cast<LPVOID>(hookedQueuePacketAddress)) != MH_OK) {
+            std::cerr << "[QueuePacketHook] Failed to remove hook." << std::endl;
         }
 
-        // Reset local state variables.
-        hookedMsgSendAddress = 0;
-        originalMsgSend = nullptr;
-        std::cout << "[MsgSendHook] Cleaned up." << std::endl;
+        hookedQueuePacketAddress = 0;
+        originalQueuePacket = nullptr;
+        std::cout << "[QueuePacketHook] Cleaned up." << std::endl;
     }
 }
