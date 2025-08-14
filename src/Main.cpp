@@ -1,9 +1,6 @@
-#include <iostream>
-#include <cstdio> // Required for fclose
-#include <windows.h>
+#include "pch.h"
 #include "Console.h"
 #include "Hooks.h"
-#include "AppState.h"   // Include for g_isInspectorWindowOpen, g_isShuttingDown
 
 HINSTANCE dll_handle;
 

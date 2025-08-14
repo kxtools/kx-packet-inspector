@@ -1,10 +1,7 @@
+#include "pch.h"
 #include "MsgSendHook.h"
 #include "PacketProcessor.h" // Include the new processor header
-#include "AppState.h"        // For g_capturePaused, g_isShuttingDown
-#include "GameStructs.h"     // For MsgSendContext definition
 #include "HookManager.h"
-
-#include <iostream> // For temporary error logging (replace with Log.h later)
 
 // Function pointer to the original game function. Set by MinHook.
 MsgSendFunc originalMsgSend = nullptr;

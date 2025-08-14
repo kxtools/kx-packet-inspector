@@ -1,9 +1,6 @@
+#include "pch.h"
 #include "ParsePlayerStateUpdatePacket.h"
 #include "../PacketStructures.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParsePlayerStateUpdatePacket(const kx::PacketInfo& packet) {

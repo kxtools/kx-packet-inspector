@@ -1,7 +1,5 @@
+#include "pch.h"
 #include "Console.h"
-#include <windows.h>
-#include <iostream>
-#include <cstdio>
 
 namespace kx {
 void SetupConsole() {

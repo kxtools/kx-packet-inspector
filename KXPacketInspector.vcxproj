@@ -63,6 +63,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)libs\safetyhook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -79,6 +81,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)libs\safetyhook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,6 +114,7 @@
     <ClCompile Include="src\MessageHandlerHook.cpp" />
     <ClCompile Include="src\MsgSendHook.cpp" />
     <ClCompile Include="src\PacketData.cpp" />
+    <ClCompile Include="src\PacketHeaders.cpp" />
     <ClCompile Include="src\PacketParser.cpp" />
     <ClCompile Include="src\PacketProcessor.cpp" />
     <ClCompile Include="src\parsers\ParseDeselectAgentPacket.cpp" />
@@ -125,6 +130,12 @@
     <ClCompile Include="src\parsers\ParseSessionTickPacket.cpp" />
     <ClCompile Include="src\parsers\ParseTimeSyncPacket.cpp" />
     <ClCompile Include="src\PatternScanner.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AppState.h" />
@@ -167,6 +178,7 @@
     <ClInclude Include="src\parsers\ParseSessionTickPacket.h" />
     <ClInclude Include="src\parsers\ParseTimeSyncPacket.h" />
     <ClInclude Include="src\PatternScanner.h" />
+    <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

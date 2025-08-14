@@ -1,8 +1,5 @@
+#include "pch.h"
 #include "ParseInteractWithAgentPacket.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParseInteractWithAgentPacket(const kx::PacketInfo& packet) {

@@ -1,10 +1,8 @@
+#include "pch.h"
 #include "Hooks.h"
-#include "AppState.h"        // For setting status flags
 #include "Config.h"          // For patterns/process name
 #include "PatternScanner.h"  // For finding game functions
 #include "MessageHandlerHook.h"
-
-#include <iostream>          // Replace with logging
 
 namespace kx {
 

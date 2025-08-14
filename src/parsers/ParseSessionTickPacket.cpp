@@ -1,8 +1,5 @@
+#include "pch.h"
 #include "ParseSessionTickPacket.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParseSessionTickPacket(const kx::PacketInfo& packet) {

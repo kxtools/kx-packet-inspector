@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "FilterUtils.h"
-#include "PacketHeaders.h" // For GetPacketName, GetSpecialPacketTypeName (needed indirectly for filter map keys)
 
 namespace kx::Filtering {
 

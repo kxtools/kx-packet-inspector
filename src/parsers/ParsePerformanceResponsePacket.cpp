@@ -1,8 +1,5 @@
+#include "pch.h"
 #include "ParsePerformanceResponsePacket.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParsePerformanceResponsePacket(const kx::PacketInfo& packet) {

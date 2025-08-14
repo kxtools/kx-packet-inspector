@@ -1,8 +1,5 @@
+#include "pch.h"
 #include "ParseHeartbeatPacket.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParseHeartbeatPacket(const kx::PacketInfo& packet) {

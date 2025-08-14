@@ -1,9 +1,6 @@
+#include "pch.h"
 #include "ParseTimeSyncPacket.h"
 #include "../PacketStructures.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParseTimeSyncPacket(const kx::PacketInfo& packet) {

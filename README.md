@@ -82,7 +82,7 @@ Feel free to fork the repository, make changes, and submit Pull Requests!
 *   Initial hooking/scanning concepts adapted from [rafzi's Hacklib_gw2](https://bitbucket.org/rafzi/hacklib_gw2/src/master/).
 *   Uses [Dear ImGui](https://github.com/ocornut/imgui).
 *   Uses [MinHook](https://github.com/TsudaKageyu/minhook).
-*   Uses [Magic Enum](https://github.com/Neargye/magic_enum).
+
 *   Uses [SafetyHook](https://github.com/cursey/safetyhook).
 
 ## Community & Contact

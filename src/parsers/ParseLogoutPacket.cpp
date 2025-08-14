@@ -1,8 +1,5 @@
+#include "pch.h"
 #include "ParseLogoutPacket.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParseLogoutPacket(const kx::PacketInfo& packet) {

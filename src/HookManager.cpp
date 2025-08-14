@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "HookManager.h"
-#include <iostream> // Replace with proper logging later
 
 namespace kx::Hooking {
 

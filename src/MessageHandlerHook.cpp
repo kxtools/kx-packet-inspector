@@ -1,17 +1,7 @@
-#include <windows.h> // Included first for platform definitions
+#include "pch.h"
 #include "MessageHandlerHook.h"
-#include "../libs/safetyhook/safetyhook.hpp"
 #include "PacketProcessor.h"
-#include "PacketData.h"
-#include "GameStructs.h"
-#include "AppState.h"
-
-#include <iostream>  // For std::cout, std::cerr (initialization logging)
-#include <iomanip>   // For std::hex
-#include <vector>    // Used by dependencies
 #include <debugapi.h> // For OutputDebugStringA (critical hook errors)
-#include <cstdio>    // For sprintf_s (critical hook errors)
-#include <exception> // For std::exception
 
 // Global SafetyHook objects for managing the mid-function hooks.
 SafetyHookMid g_handlerHook1{};

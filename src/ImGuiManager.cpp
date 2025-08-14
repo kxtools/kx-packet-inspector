@@ -1,29 +1,10 @@
-#define NOMINMAX
-
+#include "pch.h"
 #include "ImGuiManager.h"
-#include "../libs/ImGui/imgui.h"
-#include "../libs/ImGui/imgui_impl_win32.h"
-#include "../libs/ImGui/imgui_impl_dx11.h"
-#include "PacketData.h" // Include for PacketInfo, g_packetLog, g_packetLogMutex
-#include "AppState.h"   // Include for UI state, filter state, hook status
-#include "GuiStyle.h"  // Include for custom styling functions
-#include "FormattingUtils.h"
+#include "GuiStyle.h"
 #include "FilterUtils.h"
-#include "PacketHeaders.h" // Need this for iterating known headers
+#include "FormattingUtils.h"
 #include "Config.h"
 #include "PacketParser.h"
-
-#include <vector>
-#include <mutex>
-#include <deque>
-#include <chrono>
-#include <sstream>
-#include <iomanip>
-#include <ctime>   // For formatting time
-#include <string>
-#include <map>     // For std::map used in filtering
-#include <windows.h> // Required for ShellExecuteA
-#include <algorithm>
 
 // Initialize static members
 int ImGuiManager::m_selectedPacketLogIndex = -1;

@@ -1,11 +1,5 @@
+#include "pch.h"
 #include "FormattingUtils.h"
-#include <sstream>
-#include <iomanip>
-#include <ctime>
-
-// Include PacketData.h again here for the implementation details of PacketInfo if needed,
-// although it's already included via the header. Best practice includes what you use.
-#include "PacketData.h" // Provides PacketInfo definition, PacketDirection
 
 namespace kx::Utils {
 

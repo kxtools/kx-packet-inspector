@@ -1,9 +1,6 @@
+#include "pch.h"
 #include "ParseSelectAgentPacket.h"
 #include "../PacketStructures.h"
-#include "../PacketHeaders.h"
-#include <cstring>
-#include <sstream>
-#include <iomanip>
 
 namespace kx::Parsing {
     std::optional<std::string> ParseSelectAgentPacket(const kx::PacketInfo& packet) {
