@@ -8,15 +8,15 @@ This documentation is organized to reflect this architecture. For detailed infor
 
 ### 1. Game Server (`gs2c`/`c2gs`) - **[Primary Focus]**
 *   **Purpose:** Handles all real-time, in-world gameplay interactions, including movement, combat, and agent synchronization.
-*   **[➤ View Game Server Protocol Details](./protocols/game/README.md)**
+*   **[➤ View Game Server Protocol Details](./protocols/game/)**
 
 ### 2. Platform / Portal Server (`ps2c`/`c2ps`)
 *   **Purpose:** Manages all account-level services, social features, and commercial interactions (Trading Post, Gem Store).
-*   **[➤ View Platform/Portal Protocol Details](./protocols/portal/README.md)**
+*   **[➤ View Platform/Portal Protocol Details](./protocols/portal/)**
 
 ### 3. Login Server (`ls2c`/`c2ls`)
 *   **Purpose:** Handles initial client authentication, account validation, and character selection. This connection is short-lived.
-*   **[➤ View Login Protocol Details](./protocols/login/README.md)**
+*   **[➤ View Login Protocol Details](./protocols/login/)**
 
 ---
 ## Core Concepts & Game Internals
